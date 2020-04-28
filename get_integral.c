@@ -18,7 +18,14 @@ double get_integral(double *x1, double *x2, double *x3, int *it_cnt)
 {
     int it_cnt1 = 0;// root function's iteration counter
     // we are using these eps1 and eps2 values to reach
-    // funal precision eps = 0.001
+    // final precision eps = 0.001 (more details in report
+    // but the main idea is to take the max(int_i + eps2)
+    // and min(int_i - eps2) where int_i is the integral
+    // that was calculated with integral functions on
+    // [x_j+-eps1;x_k+-eps1] segment and check that
+    // the max(int_i + eps2) - min(int_i - eps2) < eps what
+    // will prove that integral was calculated with eps
+    // precision):
     double  eps1 = 1e-6, eps2 = 1e-6;
     // the root is inside [a;b] segments;
     // it's obvious from the graphics of the functions

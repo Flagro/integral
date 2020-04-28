@@ -46,7 +46,10 @@ int main(int argc, char * argv[])
         }
         else if (!strcmp(argv[i], "-abscissa"))
         {
-            puts("Curve intersection points: x1, x2, x3");
+            puts("Curve intersection points:");
+            puts("x1 - between f1 and f2,");
+            puts("x2 - between f1 and f3,");
+            puts("x3 - between f2 and f3:");
             printf("x1 = %lf, x2 = %lf, x3 = %lf\n", x1, x2, x3);
         }
         else if (!strcmp(argv[i], "-itcnt"))
