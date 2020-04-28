@@ -3,17 +3,20 @@
 #include <math.h>
 #include <assert.h>
 
-extern double get_integral(double *, double *, double *, int *);
+extern double get_integral(double *, double *, double *, int *, int *);
 extern void test(char *, char *, int, double, double, double);
+
+void invalid_input_msg(char *error)
+{
+    printf("Incorrect input: ");
+    printf("%s\n", error);
+    puts("Try './main -help' for more information.");
+}
 
 int main(int argc, char * argv[])
 {
-    char *help_advice = "Try './main -help' for more information.";
     if(argc <= 1)
-        printf("%s\n", help_advice);
-    double x1, x2, x3;
-    int it_cnt;
-    double ans = get_integral(&x1, &x2, &x3, &it_cnt);
+        puts("The program got no options, try './main -help' for the usage");
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-help"))
@@ -26,9 +29,12 @@ int main(int argc, char * argv[])
             puts("Usage: ./main [options]");
             puts("Options and arguments:");
             puts("\t-help\t\tDisplay this information");
-            puts("\t-getintegral\tPrint the value of area between given curves");
-            puts("\t-abscissa\tPrint the abscissas of intersection points");
-            puts("\t-itcnt\t\tPrint the amount of iterations for finding the roots");
+            puts("\t-getintegral [abscissa] [itcnt] Print the value of area");
+            puts("\t\t\tbetween given curves; use 'abscissa' as the agument");
+            puts("\t\t\tto print the abscissas of intersection points and");
+            puts("\t\t\tuse 'itcnt' as the argument to print the amount");
+            puts("\t\t\tof iterations required for finding the roots and");
+            puts("\t\t\tcalculating the integrals");
             puts("\t-testf\t\tPrint the functions from the tests");
             puts("\t-testmode {i|r} {all | custom fn a b eps} To get into the test mode");
             puts("\t\t\tof function i-integer or function r-root with all-mode");
@@ -42,20 +48,43 @@ int main(int argc, char * argv[])
         }
         else if (!strcmp(argv[i], "-getintegral"))
         {
-            printf("Area between given curves with eps = 0.001: %.5lf\n", ans);
-        }
-        else if (!strcmp(argv[i], "-abscissa"))
-        {
-            puts("Curve intersection points:");
-            puts("x1 - between f1 and f2,");
-            puts("x2 - between f1 and f3,");
-            puts("x3 - between f2 and f3:");
-            printf("x1 = %lf, x2 = %lf, x3 = %lf\n", x1, x2, x3);
-        }
-        else if (!strcmp(argv[i], "-itcnt"))
-        {
-            printf("Amount of iterations required for finding abscissas: ");
-            printf("%d\n", it_cnt);
+            double x1, x2, x3;
+            int it_r, it_i;
+            double ans = get_integral(&x1, &x2, &x3, &it_r, &it_i);
+            puts("The area between three given curves:");
+            puts("f1(x) = ln(x), f2(x) = -2x + 14 and f3(x) = 1/(2-x) + 6");
+            puts("calculated by using trapezoidal method and method of chords");
+            printf("with eps = 0.001 is: %.5lf\n", ans);
+            char ab = 0, it = 0;
+            if (i + 1 < argc && !strcmp(argv[i + 1], "abscissa"))
+            {
+                ab = 1;
+                if (i + 2 < argc && !strcmp(argv[i + 2], "itcnt"))
+                    it = 1;
+            }
+            else if (i + 1 < argc && !strcmp(argv[i + 1], "itcnt"))
+            {
+                it = 1;
+                if (i + 2 < argc && !strcmp(argv[i + 2], "abscissa"))
+                    ab = 1;
+            }
+            if (ab)
+            {
+                i++;
+                puts("Curve intersection points:");
+                puts("x1 - between f1 and f2,");
+                puts("x2 - between f1 and f3,");
+                puts("x3 - between f2 and f3:");
+                printf("x1 = %lf, x2 = %lf, x3 = %lf\n", x1, x2, x3);
+            }
+            if (it)
+            {
+                i++;
+                printf("Amount of iterations required for finding abscissas: ");
+                printf("%d\n", it_r);
+                printf("Amount of iterations required for finding integrals: ");
+                printf("%d\n", it_i);
+            }
         }
         else if (!strcmp(argv[i], "-testf"))
         {
@@ -73,25 +102,19 @@ int main(int argc, char * argv[])
         {
             if (i + 2 >= argc)
             {
-                printf("Incorrect input:");
-                puts("-testmode option requires at least 2 arguments.");
-                printf("%s", help_advice);
+                invalid_input_msg("-testmode option requires at least 2 arguments.");
                 break;
             }
             char *func = argv[i + 1];
-            if (strcmp(func, "i") & strcmp(func, "r"))
+            if (strcmp(func, "i") && strcmp(func, "r"))
             {
-                printf("Incorrect input:");
-                puts("invalid -testmode's 1st argument.");
-                printf("%s", help_advice);
+                invalid_input_msg("invalid -testmode's 1st argument.");
                 break;
             }
             char *mode = argv[i + 2];
             if (strcmp(mode, "all") & strcmp(mode, "custom"))
             {
-                printf("Incorrect input:");
-                puts("invalid -testmode's 2nd argument.");
-                printf("%s", help_advice);
+                invalid_input_msg("invalid -testmode's 2nd argument.");
                 break;
             }
             if (!strcmp(mode, "all"))
@@ -103,29 +126,42 @@ int main(int argc, char * argv[])
             {
                 if (i + 6 >= argc)
                 {
-                    printf("Incorrect input:");
-                    puts("-testmode in custom mode requires at least 6 arguments.");
-                    printf("%s", help_advice);
+                    invalid_input_msg("-testmode in custom mode requires at least 6 arguments.");
                     break;
                 }
+                int scanned;
                 int func_num;
-                assert(sscanf(argv[i + 3], "%d", &func_num) && "Incorrect input");
+                scanned = sscanf(argv[i + 3], "%d", &func_num);
+                if (!scanned || func_num < 0 || func_num > 4)
+                {
+                    invalid_input_msg("invalid -testmode's 3rd argument.");
+                    break;
+                }
                 double func_a;
-                assert(sscanf(argv[i + 4], "%lf", &func_a) && "Incorrect input");
+                scanned = sscanf(argv[i + 4], "%lf", &func_a);
+                if (!scanned)
+                {
+                    invalid_input_msg("invalid -testmode's 4th argument.");
+                    break;
+                }
                 double func_b;
-                assert(sscanf(argv[i + 5], "%lf", &func_b) && "Incorrect input");
+                scanned = sscanf(argv[i + 5], "%lf", &func_b);
+                if (!scanned || func_a >= func_b)
+                {
+                    invalid_input_msg("invalid -testmode's 5th argument.");
+                    break;
+                }
                 double func_eps;
-                assert(sscanf(argv[i + 6], "%lf", &func_eps) && "Incorrect input");
+                scanned = sscanf(argv[i + 6], "%lf", &func_eps);
+                if (!scanned || func_eps <= 0)
+                {
+                    invalid_input_msg("invalid -testmode's 6th argument.");
+                    break;
+                }
                 test(func, mode, func_num, func_a, func_b, func_eps);
                 i += 6;
             }
         }
-        else
-        {
-            printf("Unknown option: %s\n", argv[i]);
-            printf("%s\n", help_advice);
-        }
-        
     }
     return 0;
 }
