@@ -60,6 +60,8 @@ int main(int argc, char * argv[])
                         chk[6] = 1;
                     i += 2;
                 }
+                else if (!strcmp(mode, "custom"))
+                    i += 6;
             }
         }
         else// none of available options:
@@ -77,14 +79,14 @@ int main(int argc, char * argv[])
         puts("intersection points.");
         puts("Usage: ./main [options]");
         puts("Options and arguments:");
-        puts("\t-help\t\tDisplay this information");
+        puts("\t-help\t\tDisplay this information.");
         puts("\t-getintegral [abscissa] [itcnt] Print the value of area");
         puts("\t\t\tbetween given curves; use 'abscissa' as the agument");
         puts("\t\t\tto print the abscissas of intersection points and");
         puts("\t\t\tuse 'itcnt' as the argument to print the amount");
         puts("\t\t\tof iterations required for finding the roots and");
-        puts("\t\t\tcalculating the integrals");
-        puts("\t-testf\t\tPrint the functions from the tests");
+        puts("\t\t\tcalculating the integrals.");
+        puts("\t-testf\t\tPrint the functions from the tests.");
         puts("\t-testmode {i|r} {all | custom fn a b eps} To get into the test mode");
         puts("\t\t\tof function i-integer or function r-root with all-mode");
         puts("\t\t\tor custom mode. All-mode tests the chosen function");
@@ -153,26 +155,26 @@ int main(int argc, char * argv[])
             if (i + 2 >= argc)
             {
                 invalid_input_msg("-testmode option requires at least 2 arguments.");
-                continue;
+                break;
             }
             char *func = argv[i + 1];
             if (strcmp(func, "i") && strcmp(func, "r"))
             {
                 invalid_input_msg("invalid -testmode's 1st argument.");
-                continue;
+                break;
             }
             char *mode = argv[i + 2];
             if (strcmp(mode, "all") & strcmp(mode, "custom"))
             {
                 invalid_input_msg("invalid -testmode's 2nd argument.");
-                continue;
+                break;
             }
             if (!strcmp(mode, "custom"))
             {
                 if (i + 6 >= argc)
                 {
                     invalid_input_msg("-testmode in custom mode requires at least 6 arguments.");
-                    continue;
+                    break;
                 }
                 int scanned;
                 int func_num;
@@ -180,31 +182,31 @@ int main(int argc, char * argv[])
                 if (!scanned || func_num < 0 || func_num > 4)
                 {
                     invalid_input_msg("invalid -testmode's 3rd argument.");
-                    continue;
+                    break;
                 }
                 double func_a;
                 scanned = sscanf(argv[i + 4], "%lf", &func_a);
                 if (!scanned)
                 {
                     invalid_input_msg("invalid -testmode's 4th argument.");
-                    continue;
+                    break;
                 }
                 double func_b;
                 scanned = sscanf(argv[i + 5], "%lf", &func_b);
                 if (!scanned || func_a >= func_b)
                 {
                     invalid_input_msg("invalid -testmode's 5th argument.");
-                    continue;
+                    break;
                 }
                 double func_eps;
                 scanned = sscanf(argv[i + 6], "%lf", &func_eps);
                 if (!scanned || func_eps <= 0)
                 {
                     invalid_input_msg("invalid -testmode's 6th argument.");
-                    continue;
+                    break;
                 }
                 if ((!strcmp(func, "r") && 
-                   ((!func_num && func_a < 0) || (func_num == 3 && func_a <= 0))) ||
+                   ((func_num == 1 && func_a < 0) || (func_num == 3 && func_a <= 0))) ||
                    (!strcmp(func, "i") && 
                    (func_num == 2 && func_a <= 0 && func_b >= 0)))
                 {
@@ -214,6 +216,8 @@ int main(int argc, char * argv[])
                     test(func, mode, func_num, func_a, func_b, func_eps);
                 i += 6;
             }
+            else
+                i += 2;
         }
     }
     return 0;

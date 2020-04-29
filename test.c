@@ -179,7 +179,8 @@ void test(char *func, char *test_mode, int test_num, double a, double b, double 
             printf("on segment %lf, %lf\n", a, b);
             printf("with %lf precision\n", eps);
             double x = root(f_r[test_num], g_r[test_num], a, b, eps);
-            // the answer can be wrong only in case the segments' ends were incorrect;
+            // the answer can be wrong only in case the segments' ends were incorrect
+            // or the root is not in the segment;
             // |F(x)| < |F(x + eps) - F(x - eps)|: 
             if (fabs(f_r[test_num](x) - g_r[test_num](x)) < 
                 fabs(f_r[test_num](x + eps) - g_r[test_num](x) - 
@@ -190,7 +191,7 @@ void test(char *func, char *test_mode, int test_num, double a, double b, double 
                 printf("iterations required: %d\n", root_it_cnt());
             }
             else
-                printf("Invalid segments' ends, try './main -help'.\n");
+                printf("Root wasn't found.\n");
             puts("====================================================\n");
         }
         
