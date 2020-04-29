@@ -24,7 +24,10 @@ int main(int argc, char * argv[])
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-help"))
+        {
             chk[0] = 1;// presence of -help option
+            break;
+        }
         else if(!strcmp(argv[i], "-getintegral"))
         {
             chk[1] = 1;// presence of -getintegral option
@@ -32,15 +35,23 @@ int main(int argc, char * argv[])
             {
                 if (!strcmp(argv[i + 1], "abscissa"))
                 {
+                    //i++;
                     chk[2] = 1;// presence of abscissa argument
                     if (i + 2 < argc && !strcmp(argv[i + 2], "itcnt"))
+                    {
                         chk[3] = 1;// presence of itcnt argument
+                        //i++;
+                    }
                 }
                 else if (!strcmp(argv[i + 1], "itcnt"))
                 {
+                    //i++;
                     chk[3] = 1;// presence of itcnt argument
                     if (i + 2 < argc && !strcmp(argv[i + 2], "abscissa"))
+                    {
                         chk[2] = 1;// presence of abscissa argument
+                        //i++;
+                    }
                 }
             }
         }
@@ -97,6 +108,7 @@ int main(int argc, char * argv[])
         puts("\t\t\tand take only [0;4] integer values, a and b arguments");
         puts("\t\t\tare for segments' ends (the chosen function must be defined");
         puts("\t\t\tin every point of the segment) and eps stands for the precision.\n");
+        return 0;
     }
     if (chk[1])// -getintegral option
     {
@@ -139,6 +151,12 @@ int main(int argc, char * argv[])
         puts("3)f(x) = ln(x) + 6, g(x) = x; (0;+inf)"); 
         puts("4)f(x) = 5 - x^2, g(x) = x^3; (-inf;+inf)\n");
     }
+    if (chk[0] || chk[1] || chk[2] || chk[3] || chk[4])
+    {
+        // main mode is done
+        return 0;
+    }
+    // test mode:
     if (chk[5])
     {
         test("i", "all", 0, 0, 0, 0);
@@ -147,7 +165,6 @@ int main(int argc, char * argv[])
     {
         test("r", "all", 0, 0 ,0 ,0);
     }
-    // test mode:
     for (int i = 1; i < argc; i++)
     {
         if (!strcmp(argv[i], "-testmode"))
@@ -210,7 +227,7 @@ int main(int argc, char * argv[])
                    (!strcmp(func, "i") && 
                    (func_num == 2 && func_a <= 0 && func_b >= 0)))
                 {
-                    invalid_input_msg("invalid segment's ends");
+                    puts("Invalid segment, try '-testf' option for more info\n");
                 }
                 else
                     test(func, mode, func_num, func_a, func_b, func_eps);
