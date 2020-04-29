@@ -17,8 +17,9 @@ int main(int argc, char * argv[])
     // chk[0] = presence of -help option, chk[1] = presence of -getintegral,
     // chk[2] = presence of abscissa, chk[3] = presence of itcnt, 
     // chk[4] = presence of -testf option, chk[5] = presence of
-    // -testmode i all option, chk[6] = presence of -testmode r all:
-    char chk[7] = {0};// presence of each option except -testmode
+    // -testmode i all option, chk[6] = presence of -testmode r all
+    // chk[7] = presence of -testmode:
+    char chk[8] = {0};// presence of each option except -testmode
     if(argc <= 1)
         puts("The program got no options, try './main -help' for the usage\n");
     for (int i = 1; i < argc; i++)
@@ -35,23 +36,23 @@ int main(int argc, char * argv[])
             {
                 if (!strcmp(argv[i + 1], "abscissa"))
                 {
-                    //i++;
                     chk[2] = 1;// presence of abscissa argument
                     if (i + 2 < argc && !strcmp(argv[i + 2], "itcnt"))
                     {
                         chk[3] = 1;// presence of itcnt argument
-                        //i++;
+                        i++;
                     }
+                    i++;
                 }
                 else if (!strcmp(argv[i + 1], "itcnt"))
                 {
-                    //i++;
                     chk[3] = 1;// presence of itcnt argument
                     if (i + 2 < argc && !strcmp(argv[i + 2], "abscissa"))
                     {
                         chk[2] = 1;// presence of abscissa argument
-                        //i++;
+                        i++;
                     }
+                    i++;
                 }
             }
         }
@@ -59,6 +60,7 @@ int main(int argc, char * argv[])
             chk[4] = 1;
         else if(!strcmp(argv[i], "-testmode"))
         {
+            chk[7] = 1;
             if (i + 2 < argc)
             {
                 char *func = argv[i + 1];
@@ -87,7 +89,8 @@ int main(int argc, char * argv[])
         puts("curves: f1(x) = ln(x), f2(x) = -2x + 14 and f3(x) = 1/(2-x) + 6");
         puts("by using trapezoidal method for finding the defined integral");
         puts("and method of chords for finding the abscissas of the");
-        puts("intersection points.");
+        puts("intersection points. Important: this program can only");
+        puts("work only in main mode or test mode.");
         puts("Usage: ./main [options]");
         puts("Options and arguments:");
         puts("\t-help\t\tDisplay this information.");
@@ -154,6 +157,8 @@ int main(int argc, char * argv[])
     if (chk[0] || chk[1] || chk[2] || chk[3] || chk[4])
     {
         // main mode is done
+        if (chk[7])
+            puts("'-testmode' is ignored, try '-help' for more information");
         return 0;
     }
     // test mode:
