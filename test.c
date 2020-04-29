@@ -120,6 +120,7 @@ void test(char *func, char *test_mode, int test_num, double a, double b, double 
             printf("with %lf precision\n", eps);
             printf("the answer is: %lf\n", integral(f_i[test_num], 
                                                     a, b, eps));
+            printf("iterations required: %d\n", integral_it_cnt());
             puts("====================================================\n");
         }
     }
@@ -177,8 +178,19 @@ void test(char *func, char *test_mode, int test_num, double a, double b, double 
                                                g_r_hr[test_num]);
             printf("on segment %lf, %lf\n", a, b);
             printf("with %lf precision\n", eps);
-            printf("the answer is: %lf\n", root(f_r[test_num], g_r[test_num],
-                                                a, b, eps));
+            double x = root(f_r[test_num], g_r[test_num], a, b, eps);
+            // the answer can be wrong only in case the segments' ends were incorrect;
+            // |F(x)| < |F(x + eps) - F(x - eps)|: 
+            if (fabs(f_r[test_num](x) - g_r[test_num](x)) < 
+                fabs(f_r[test_num](x + eps) - g_r[test_num](x) - 
+                     f_r[test_num](x - eps) + f_r[test_num](x - eps))
+                && x >= a && x <= b)
+            {
+                printf("the answer is: %lf\n", x);
+                printf("iterations required: %d\n", root_it_cnt());
+            }
+            else
+                printf("Invalid segments' ends, try './main -help'.\n");
             puts("====================================================\n");
         }
         

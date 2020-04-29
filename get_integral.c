@@ -3,8 +3,8 @@
 extern double root(double (*f) (double), double (*g) (double), 
             double a, double b, double eps1);
 extern double integral(double (*f) (double), double a, double b, double eps2);
-extern int integral_it_cnt(void);
 extern int root_it_cnt(void);
+extern int integral_it_cnt(void);
 extern double f1(double);
 extern double f2(double);
 extern double f3(double);
