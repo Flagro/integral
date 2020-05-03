@@ -8,8 +8,11 @@ RM = rm -f
 
 all: main
 
-main: main.o get_integral.o test.o root.o integral.o f1.o f2.o f3.o
-	$(CC) $(CFLAGS) $^ -o $@ -lm
+main: main.o
+	$(CC) $(CFLAGS) main.o get_integral.o test.o root.o integral.o f1.o f2.o f3.o -o $@ -lm
+
+main.o: main.c get_integral.o test.o
+	$(CC) $(CFLAGS) -c $<
 
 get_integral.o: get_integral.c integral.o root.o f1.o f2.o f3.o
 	$(CC) $(CFLAGS) -c $<
